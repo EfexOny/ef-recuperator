@@ -210,12 +210,14 @@ function verificarescuba()
     if not activat then
         local ped = GetPlayerPed(-1)
         SetPedScubaGearVariation(ped)
+        SetPedDiesInWater(ped,false)
         activat = true
-        scubarun()
+        -- scubarun()
         print(activat)
     else
         local ped = GetPlayerPed(-1)
         ClearPedScubaGearVariation(ped)
+        SetPedDiesInWater(ped,true)
         activat = false
         print(activat)
     end
@@ -233,26 +235,56 @@ function mesajrun()
 	Citizen.Wait(3000)
 end
 
+RegisterNetEvent("ef-recuperator:client:autogen")
+AddEventHandler("ef-recuperator:client:autogen",function()
+    autogen()
+end)
+
 function autogen()
     hasItem = QBCore.Functions.HasItem("autogen")
     ped = GetPlayerPed(-1)
 
 
     if hasItem then
-        FreezeEntityPosition(ped, true)
         TaskStartScenarioInPlace(ped, 'WORLD_HUMAN_WELDING', 0, true)
-        QBCore.Functions.Progressbar("search_register", ("Ii dam cu autogenu bossi md"), 2000, false, true, {
+        QBCore.Functions.Progressbar("search_register", ("Ii dam cu autogenu bossi md"), 200, false, true, {
             disableMovement = true,
             disableCarMovement = true,
-            disableMouse = true,
+            disableMouse = false,
             disableCombat = true,
         }, {
         }, {}, {}, function() 
         end)
-        Wait(2000)
+        Wait(200)
         ClearPedTasksImmediately(ped)
-    else
-        
+    end
+end
+
+RegisterCommand('generatloc', function(_, args)
+    generatlocuri()
+end)
+
+function generatlocuri()
+    exports['qb-target']:AddBoxZone("container", Config.locatii[math.random(#Config.locatii)], 2, 2, {
+        name = "container",
+        heading = 0,
+        debugPoly = true,
+    }, {
+        options = {
+            {
+                type = "client",
+                event = "ef-recuperator:client:autogen",
+                icon = "fa-solid fa-money-bill-wave",
+                label = "Use it",
+            },
+        },
+        distance = 2.5
+    })
+    print("am facut asta")
+end
+
+function cleanup()
+    
 end
 
 
@@ -261,7 +293,7 @@ Citizen.CreateThread(function()
     while activat do
         Wait(100)
         ped = GetPlayerPed(-1)
-        SetPedMaxTimeUnderwater(ped,15000)
+        SetPedMaxTimeUnderwater(ped,150)
     end
   end)
 end
