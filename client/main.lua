@@ -4,6 +4,8 @@ inceput = false
 activat = false
 
 
+-- ==========THREADS===============
+
 Citizen.CreateThread(function()
     -- PlayerData management
     local PlayerData = QBCore.Functions.GetPlayerData()
@@ -38,12 +40,12 @@ Citizen.CreateThread(function()
 end)
 
 
-RegisterNetEvent('ef-launder:client:notify')
-AddEventHandler('ef-launder:client:notify', function(msg, type)
+RegisterNetEvent('ef-recuperator:client:notify')
+AddEventHandler('ef-recuperator:client:notify', function(msg, type)
     QBCore.Functions.Notify(msg,type)
 end)
 
-function SetupLaunderBoss()
+function SetupBoss()
 	BossHash = Config.ped[math.random(#Config.ped)]
 	loc = Config.location[math.random(#Config.location)]
 	QBCore.Functions.LoadModel(BossHash)
@@ -70,12 +72,12 @@ function DeleteBoss()
 		SetPedAsNoLongerNeeded(Boss)
 		Wait(8000)
 		DeletePed(Boss)
-        SetupLaunderBoss()
+        SetupBoss()
 	end
 end
 
 function CreatePeds()
-	SetupLaunderBoss()
+	SetupBoss()
 end
 
 CreateThread(function()
@@ -209,6 +211,7 @@ function verificarescuba()
         local ped = GetPlayerPed(-1)
         SetPedScubaGearVariation(ped)
         activat = true
+        scubarun()
         print(activat)
     else
         local ped = GetPlayerPed(-1)
@@ -218,6 +221,8 @@ function verificarescuba()
     end
 end
 
+
+
 function mesajrun()
 	Citizen.Wait(2000)
 	TriggerServerEvent('qb-phone:server:sendNewMail', {
@@ -226,4 +231,37 @@ function mesajrun()
 	message = ('Du-te si foloseste autogenul sa iei obiectele din containere'),
 	})
 	Citizen.Wait(3000)
+end
+
+function autogen()
+    hasItem = QBCore.Functions.HasItem("autogen")
+    ped = GetPlayerPed(-1)
+
+
+    if hasItem then
+        FreezeEntityPosition(ped, true)
+        TaskStartScenarioInPlace(ped, 'WORLD_HUMAN_WELDING', 0, true)
+        QBCore.Functions.Progressbar("search_register", ("Ii dam cu autogenu bossi md"), 2000, false, true, {
+            disableMovement = true,
+            disableCarMovement = true,
+            disableMouse = true,
+            disableCombat = true,
+        }, {
+        }, {}, {}, function() 
+        end)
+        Wait(2000)
+        ClearPedTasksImmediately(ped)
+    else
+        
+end
+
+
+function scubarun()
+Citizen.CreateThread(function()
+    while activat do
+        Wait(100)
+        ped = GetPlayerPed(-1)
+        SetPedMaxTimeUnderwater(ped,15000)
+    end
+  end)
 end
