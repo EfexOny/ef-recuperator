@@ -142,6 +142,18 @@ AddEventHandler("ef-recuperator:client:scuba",function()
     verificarescuba()
 end)
 
+RegisterCommand('scoatescuba', function(_, args)
+    TriggerEvent('ef-recuperator:client:scoatescuba')
+end)
+
+
+RegisterNetEvent("ef-recuperator:clinet:scoatescuba")
+AddEventHandler("ef-recuperator:client:scoatescuba",function()
+    local ped = GetPlayerPed(-1)
+    ClearAllPedProps(ped)
+end)
+
+
 
 RegisterNetEvent("ef-recuperator:client:startmis")
 AddEventHandler("ef-recuperator:client:startmis",function()
@@ -150,9 +162,11 @@ AddEventHandler("ef-recuperator:client:startmis",function()
         inceput = true
         targetstart()
         mesajrun()
+        generatlocuri()
         print("da")
     else
         targetstop()
+        cleanuplocatie()
         print(inceput)
     end
 end)
@@ -207,16 +221,24 @@ function targetstop()
 end
 
 function verificarescuba()
+    ped = GetPlayerPed(-1)
+    prop = "p_s_scuba_tank_s"
+    pedPos = GetEntityCoords(ped, false)
+    scuba = CreateObject(GetHashKey(prop),pedPos.x , pedPos.y,pedPos.z,1,1,1)
+    scubaEntity = scuba 
+
     if not activat then
-        local ped = GetPlayerPed(-1)
-        SetPedScubaGearVariation(ped)
+        AttachEntityToEntity(scubaEntity,ped,GetPedBoneIndex(GetPlayerPed(-1), 24818), -0.075, -0.15, -0.010, 0, 90.0, -180.0, true, true, false, true, 1, true)  
         SetPedDiesInWater(ped,false)
         activat = true
-        -- scubarun()
         print(activat)
     else
-        local ped = GetPlayerPed(-1)
-        ClearPedScubaGearVariation(ped)
+        ClearAllPedProps(ped)
+        DeletePed(ped)
+        DetachEntity(scubaEntity,true,false)
+        DeleteEntity(scubaEntity)
+        DeleteEntity(scuba)
+        ClearPedTasksImmediately(ped)
         SetPedDiesInWater(ped,true)
         activat = false
         print(activat)
@@ -241,13 +263,12 @@ AddEventHandler("ef-recuperator:client:autogen",function()
 end)
 
 function autogen()
-    hasItem = QBCore.Functions.HasItem("autogen")
-    ped = GetPlayerPed(-1)
-
-
+    local hasItem = QBCore.Functions.HasItem("autogen")
+    local ped = GetPlayerPed(-1)
+    
     if hasItem then
         TaskStartScenarioInPlace(ped, 'WORLD_HUMAN_WELDING', 0, true)
-        QBCore.Functions.Progressbar("search_register", ("Ii dam cu autogenu bossi md"), 200, false, true, {
+        QBCore.Functions.Progressbar("search_register", ("Ii dam cu autogenu boss imd"), 200, false, true, {
             disableMovement = true,
             disableCarMovement = true,
             disableMouse = false,
@@ -280,20 +301,10 @@ function generatlocuri()
         },
         distance = 2.5
     })
+    cleanuplocatie()
     print("am facut asta")
 end
 
 function cleanup()
-    
-end
-
-
-function scubarun()
-Citizen.CreateThread(function()
-    while activat do
-        Wait(100)
-        ped = GetPlayerPed(-1)
-        SetPedMaxTimeUnderwater(ped,150)
-    end
-  end)
+    exports['qb-target']:RemoveZone('container')
 end
