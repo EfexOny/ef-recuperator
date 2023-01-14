@@ -3,7 +3,6 @@
 inceput = false 
 activat = false
 
-
 -- ==========THREADS===============
 
 Citizen.CreateThread(function()
@@ -150,6 +149,9 @@ end)
 RegisterNetEvent("ef-recuperator:clinet:scoatescuba")
 AddEventHandler("ef-recuperator:client:scoatescuba",function()
     local ped = GetPlayerPed(-1)
+    DeleteEntity(scubaEntity)
+    DeleteObject(scuba)
+    DeleteObject(scubaEntity)
     ClearAllPedProps(ped)
 end)
 
@@ -228,18 +230,12 @@ function verificarescuba()
     scubaEntity = scuba 
 
     if not activat then
-        AttachEntityToEntity(scubaEntity,ped,GetPedBoneIndex(GetPlayerPed(-1), 24818), -0.075, -0.15, -0.010, 0, 90.0, -180.0, true, true, false, true, 1, true)  
+        AttachEntityToEntity(scubaEntity,ped,GetPedBoneIndex(GetPlayerPed(-1), 24818), -0.30, -0.20, -0.010, 0, 90.0, -180.0, true, true, false, true, 1, true)  
         SetPedDiesInWater(ped,false)
         activat = true
         print(activat)
     else
-        ClearAllPedProps(ped)
-        DeletePed(ped)
-        DetachEntity(scubaEntity,true,false)
-        DeleteEntity(scubaEntity)
-        DeleteEntity(scuba)
-        ClearPedTasksImmediately(ped)
-        SetPedDiesInWater(ped,true)
+        TriggerEvent("ef-recuperator:clinet:scoatescuba")
         activat = false
         print(activat)
     end
@@ -267,8 +263,8 @@ function autogen()
     local ped = GetPlayerPed(-1)
     
     if hasItem then
-        TaskStartScenarioInPlace(ped, 'WORLD_HUMAN_WELDING', 0, true)
-        QBCore.Functions.Progressbar("search_register", ("Ii dam cu autogenu boss imd"), 200, false, true, {
+        TaskStartScenarioInPlace(ped, 'WORLD_HUMAN_WELDING', 10000, true)
+        QBCore.Functions.Progressbar("search_register", ("Ii dam cu autogenu boss imd"), 10000, false, true, {
             disableMovement = true,
             disableCarMovement = true,
             disableMouse = false,
@@ -276,9 +272,15 @@ function autogen()
         }, {
         }, {}, {}, function() 
         end)
-        Wait(200)
+        Wait(10000)
         ClearPedTasksImmediately(ped)
+        generatlocuri()
+
     end
+end
+
+function generatiteme()
+    
 end
 
 RegisterCommand('generatloc', function(_, args)
@@ -286,6 +288,7 @@ RegisterCommand('generatloc', function(_, args)
 end)
 
 function generatlocuri()
+    cleanup()
     exports['qb-target']:AddBoxZone("container", Config.locatii[math.random(#Config.locatii)], 2, 2, {
         name = "container",
         heading = 0,
@@ -301,7 +304,6 @@ function generatlocuri()
         },
         distance = 2.5
     })
-    cleanuplocatie()
     print("am facut asta")
 end
 
