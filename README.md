@@ -11,7 +11,6 @@
 
 ```
 
-Add this in qb-smallresources client consumables.lua
 
 Add this in qb-smallresources server consumables.lua
 
