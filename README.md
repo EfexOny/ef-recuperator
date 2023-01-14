@@ -12,11 +12,10 @@
 ```
 
 Add this in qb-smallresources client consumables.lua
-```lua
 
 Add this in qb-smallresources server consumables.lua
 
-```
+```lua
 
 QBCore.Functions.CreateUseableItem("setoxy", function(source, item)
     local src = source
@@ -26,6 +25,9 @@ QBCore.Functions.CreateUseableItem("setoxy", function(source, item)
         TriggerEvent("ef-recuperator:client:scuba")
     end
 end)
+```
+Add this in qb-smallresources client consumables.lua
+
 
 ```lua
 
