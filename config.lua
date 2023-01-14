@@ -12,6 +12,16 @@ Config.location = {
      vector4(3047.22, -313.54, 9.49, 24.59)
 }
 
+-- chance in % that the autogen desotroys
+
+
+Config.destroy = 20 
+
+-- chance in % that u get a reward
+
+Config.reward = 10
+
+
 --  items that can drop // iteme de pica
 
 Config.items = { 

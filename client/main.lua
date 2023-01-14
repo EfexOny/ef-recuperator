@@ -132,9 +132,6 @@ RegisterNetEvent('ef-recuperator:client:stop', function()
 
 end)
 
-RegisterCommand('scuba', function(_, args)
-    TriggerEvent('ef-recuperator:client:scuba')
-end)
 
 RegisterNetEvent("ef-recuperator:client:scuba")
 AddEventHandler("ef-recuperator:client:scuba",function()
@@ -149,9 +146,11 @@ end)
 RegisterNetEvent("ef-recuperator:clinet:scoatescuba")
 AddEventHandler("ef-recuperator:client:scoatescuba",function()
     local ped = GetPlayerPed(-1)
+    ClearPedScubaGearVariation(ped)
     DeleteEntity(scubaEntity)
     DeleteObject(scuba)
     DeleteObject(scubaEntity)
+    SetPedDiesInWater(ped,true)
     ClearAllPedProps(ped)
 end)
 
@@ -183,6 +182,9 @@ AddEventHandler('onResourceStop', function(r)
 			exports['qb-target']:RemoveTargetModel(Config.ped, {
 				("Start doing the work")
 			})
+
+            cleanup()
+            
         end
     end)
 
@@ -231,6 +233,8 @@ function verificarescuba()
 
     if not activat then
         AttachEntityToEntity(scubaEntity,ped,GetPedBoneIndex(GetPlayerPed(-1), 24818), -0.30, -0.20, -0.010, 0, 90.0, -180.0, true, true, false, true, 1, true)  
+        SetEnableScuba(ped)
+        SetPedScubaGearVariation(ped)
         SetPedDiesInWater(ped,false)
         activat = true
         print(activat)
@@ -275,13 +279,25 @@ function autogen()
         Wait(10000)
         ClearPedTasksImmediately(ped)
         generatlocuri()
+        
+        
+        if math.random(1,100) <= Config.destroy then
+            TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["autogen"], "remove")
+            TriggerServerEvent("ef-recuperator:server:remove")
+            TriggerEvent('ef-recuperator:client:notify', "Ti s-a stricat autogenul!", 'error')
+        end
 
+        if math.random(1,100) <= Config.reward then
+            TriggerServerEvent("ef-recuperator:server:reward")    
+            TriggerEvent('ef-recuperator:client:notify', "Ai gasit ceva !", 'success')
+        else
+            TriggerEvent('ef-recuperator:client:notify', "N-ai gasit nimic.", 'error')
+        end
+    else
+        TriggerEvent('ef-recuperator:client:notify', "N-ai autogen la tine babalaule!", 'error')
     end
 end
 
-function generatiteme()
-    
-end
 
 RegisterCommand('generatloc', function(_, args)
     generatlocuri()
