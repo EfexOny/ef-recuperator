@@ -47,3 +47,5 @@ end)
 
 
 ```
+
+Need to add an npc where to get autogen(welding shit) and oxy set. 
