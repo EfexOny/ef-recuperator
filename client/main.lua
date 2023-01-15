@@ -2,42 +2,9 @@
 
 inceput = false 
 activat = false
+markda = true
 
 -- ==========THREADS===============
-
-Citizen.CreateThread(function()
-    -- PlayerData management
-    local PlayerData = QBCore.Functions.GetPlayerData()
-
-    RegisterNetEvent("QBCore:Client:OnPlayerLoaded")
-    AddEventHandler("QBCore:Client:OnPlayerLoaded", function()
-        PlayerData = QBCore.Functions.GetPlayerData()
-    end)
-
-    RegisterNetEvent("QBCore:Client:OnPlayerUnload")
-    AddEventHandler("QBCore:Client:OnPlayerUnload", function()
-        PlayerData = nil
-    end)
-
-    RegisterNetEvent("QBCore:Client:OnJobUpdate")
-    AddEventHandler("QBCore:Client:OnJobUpdate", function(job)
-        if PlayerData then
-            PlayerData.job = job
-        else
-            PlayerData = QBCore.Functions.GetPlayerData()
-        end
-    end)
-
-    RegisterNetEvent("QBCore:Client:SetDuty")
-    RegisterNetEvent('QBCore:Client:SetDuty', function(duty)
-        if PlayerData.job then
-            PlayerData.job.onduty = duty
-        else
-            PlayerData = QBCore.Functions.GetPlayerData()
-        end
-    end)
-end)
-
 
 RegisterNetEvent('ef-recuperator:client:notify')
 AddEventHandler('ef-recuperator:client:notify', function(msg, type)
@@ -164,11 +131,9 @@ AddEventHandler("ef-recuperator:client:startmis",function()
         targetstart()
         mesajrun()
         generatlocuri()
-        print("da")
     else
         targetstop()
-        cleanuplocatie()
-        print(inceput)
+        cleanup()
     end
 end)
 
@@ -183,8 +148,8 @@ AddEventHandler('onResourceStop', function(r)
 				("Start doing the work")
 			})
 
-            cleanup()
-            
+            cleanup()            
+
         end
     end)
 
@@ -237,11 +202,9 @@ function verificarescuba()
         SetPedScubaGearVariation(ped)
         SetPedDiesInWater(ped,false)
         activat = true
-        print(activat)
     else
         TriggerEvent("ef-recuperator:clinet:scoatescuba")
         activat = false
-        print(activat)
     end
 end
 
@@ -250,9 +213,9 @@ end
 function mesajrun()
 	Citizen.Wait(2000)
 	TriggerServerEvent('qb-phone:server:sendNewMail', {
-	sender = ('Efex'),
-	subject = ('Ai treaba de facut'),
-	message = ('Du-te si foloseste autogenul sa iei obiectele din containere'),
+	sender = (Config.sender),
+	subject = (Config.subject),
+	message = (Config.message),
 	})
 	Citizen.Wait(3000)
 end
@@ -260,6 +223,7 @@ end
 RegisterNetEvent("ef-recuperator:client:autogen")
 AddEventHandler("ef-recuperator:client:autogen",function()
     autogen()
+    markda = false
 end)
 
 function autogen()
@@ -305,10 +269,14 @@ end)
 
 function generatlocuri()
     cleanup()
-    exports['qb-target']:AddBoxZone("container", Config.locatii[math.random(#Config.locatii)], 2, 2, {
+    markda = true
+    local locat = math.random(#Config.locatii)
+    local mark = Config.locatii[locat]
+    exports['qb-target']:AddCircleZone("container", Config.locatii[locat],2.0, {
         name = "container",
         heading = 0,
-        debugPoly = true,
+        useZ = true,
+        -- debugPoly = true,
     }, {
         options = {
             {
@@ -320,9 +288,18 @@ function generatlocuri()
         },
         distance = 2.5
     })
-    print("am facut asta")
+    ped= GetPlayerPed(-1)
+    pos = GetEntityCoords(ped)
+
+    -- vector3(3165.97, -331.66, -23.41)
+    
+        while (math.abs(mark.x - pos.x) > 1 or math.abs(mark.y - pos.y) > 1 or math.abs(mark.z - pos.z) > 1) do
+            Wait(1)
+            DrawMarker(2, mark.x,mark.y,mark.z,0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 0, 0, 100, false, false, 2, nil, nil, false)
+    end
 end
 
 function cleanup()
+    markda = false
     exports['qb-target']:RemoveZone('container')
 end
