@@ -105,6 +105,7 @@ AddEventHandler("ef-recuperator:client:scuba",function()
     verificarescuba()
 end)
 
+
 RegisterCommand('scoatescuba', function(_, args)
     TriggerEvent('ef-recuperator:client:scoatescuba')
 end)
@@ -113,10 +114,11 @@ end)
 RegisterNetEvent("ef-recuperator:clinet:scoatescuba")
 AddEventHandler("ef-recuperator:client:scoatescuba",function()
     local ped = GetPlayerPed(-1)
-    ClearPedScubaGearVariation(ped)
     DeleteEntity(scubaEntity)
     DeleteObject(scuba)
     DeleteObject(scubaEntity)
+    ClearPedScubaGearVariation(ped)
+    SetPedComponentVariation(ped, 8, 122, 2, 0)
     SetPedDiesInWater(ped,true)
     ClearAllPedProps(ped)
 end)
@@ -133,6 +135,7 @@ AddEventHandler("ef-recuperator:client:startmis",function()
         generatlocuri()
     else
         targetstop()
+        markda = false
         cleanup()
     end
 end)
@@ -291,9 +294,8 @@ function generatlocuri()
     ped= GetPlayerPed(-1)
     pos = GetEntityCoords(ped)
 
-    -- vector3(3165.97, -331.66, -23.41)
     
-        while (math.abs(mark.x - pos.x) > 1 or math.abs(mark.y - pos.y) > 1 or math.abs(mark.z - pos.z) > 1) do
+        while (math.abs(mark.x - pos.x) > 1 or math.abs(mark.y - pos.y) > 1 or math.abs(mark.z - pos.z) > 1) and markda do
             Wait(1)
             DrawMarker(2, mark.x,mark.y,mark.z,0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 0, 0, 100, false, false, 2, nil, nil, false)
     end
